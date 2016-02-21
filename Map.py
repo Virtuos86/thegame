@@ -18,6 +18,7 @@ import kivy
 # Модули игры.
 import Const
 import Lowlevel
+import Hero
 
 
 ###############################################################################
@@ -50,7 +51,7 @@ def  MapGeneration(maplevel):
 			  or (y >= Const.MAP_HEIGHT - Const.LOCAL_MAP_HEIGHT):
 	   			cell.Tile = Const.tileStone
 			else:
-				if random.randint(0, 100) < 35:
+				if random.randint(0, 100) < 30:
 					cell.Tile = Const.tileTree
 				elif random.randint(0, 2) == 0:
 					cell.Tile = Const.tileGrass
@@ -90,6 +91,8 @@ def  ShowMap():
 					for y in xrange(GameMap[CurMap].LocalMapTop,
 					                GameMap[CurMap].LocalMapTop + Const.LOCAL_MAP_HEIGHT - 1):
 						Lowlevel.ShowCell(GameMap[CurMap].Cells[x][y], x, y)
+	# Хак.
+	Hero.ShowHero(Hero.CurHero)
 	Lowlevel.main()
 
 ###############################################################################
@@ -111,7 +114,7 @@ class TMap(object):
 	__slots__ = 'Cells', 'LocalMapLeft', 'LocalMapTop'
 	def __init__(self, localmapleft=0, localmaptop=0):
 		super(TMap, self).__init__()
-		self.Cells = [[TMapCell() for col in xrange(Const.MAP_HEIGHT)] for row in xrange(Const.MAP_WIDTH)]
+		self.Cells = [[TMapCell() for x in xrange(Const.MAP_HEIGHT)] for y in xrange(Const.MAP_WIDTH)]
 		self.LocalMapLeft = localmapleft
 		self.LocalMapTop = localmaptop
 
@@ -129,4 +132,3 @@ GameMap = TGameMap()
 
 # Текущая карта.
 CurMap = 0
-

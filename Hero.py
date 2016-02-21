@@ -13,6 +13,7 @@ import random
 import Const
 import Tables
 import Map
+import Lowlevel
 
 ###############################################################################
 
@@ -55,9 +56,20 @@ def InitHeroes():
 def  SetHeroVisible(HeroNum):
 	hero = Heroes[HeroNum]
 	curmap = Map.GameMap[Map.CurMap]
-	for i in xrange(hero.x - hero.VisLong, hero.x + hero.VisLong):
-		for j in xrange(hero.y - hero.VisLong, hero.y + hero.VisLong):
-			curmap.Cells[i][j].IsVisible = True
+	for x in xrange(hero.x - hero.VisLong, hero.x + hero.VisLong + 1):
+		for y in xrange(hero.y - hero.VisLong, hero.y + hero.VisLong + 1):
+			curmap.Cells[x][y].IsVisible = True
+			Lowlevel.ShowCell(curmap.Cells[x][y], x, y)
+
+def ShowHero(HeroNum):
+	hero = Heroes[HeroNum]
+	curmap = Map.GameMap[Map.CurMap]
+	x, y = (Const.WINDOW_LEFT + hero.x,
+		    Const.WINDOW_TOP + hero.y)
+	Lowlevel.ChangeTileSourceWithSavingPrevious(x, y, './resource/img/hero.png')
+
+def CleaningUp(x, y):
+	Lowlevel.CleaningUp(x, y)
 
 ###############################################################################
 

@@ -8,6 +8,17 @@ from kivy import platform as _platform
 
 ###############################################################################
 
+# Клавиша-модификатор ("shift", "alt", "ctrl")
+KEYMOD = 'alt'
+
+# Управление героем.
+KEYUP = 273
+KEYDOWN = 274
+KEYLEFT = 276
+KEYRIGHT = 275
+
+###############################################################################
+
 class Colors:
     blue   = (0, 0, 1, 1)
     gray   = (0.5, 0.5, 0.5, 1)
@@ -36,11 +47,11 @@ if _platform == 'android':
 	# высота карты
 	MAP_HEIGHT = 32 + LOCAL_MAP_HEIGHT * 2
 else:
-	LOCAL_MAP_WIDTH = 8
-	LOCAL_MAP_HEIGHT = 8
+	LOCAL_MAP_WIDTH = 4
+	LOCAL_MAP_HEIGHT = 4
 
-	MAP_WIDTH = 24 + LOCAL_MAP_WIDTH * 2
-	MAP_HEIGHT = 24 + LOCAL_MAP_HEIGHT * 2
+	MAP_WIDTH = 32 + LOCAL_MAP_WIDTH * 2
+	MAP_HEIGHT = 32 + LOCAL_MAP_HEIGHT * 2
 
 # Начало окна вывода видимой части карты (оставлено для совместимости).
 WINDOW_LEFT = 0
@@ -64,3 +75,19 @@ tileLast = tileFirstStopTile + 1
 
 # глубина пещеры
 MaxDungeonLevel = 7
+
+###############################################################################
+
+MaxChars = 4
+chrSTR = 1 # сила
+chrDEX = 2 # ловкость
+chrCON = 3 # телосложение
+chrIQ  = 4 # ум
+
+MaxSkills = 2
+skillHandWeapon = 1 # ближний бой
+skillTrapSearch = 2 # обнаружение ловушек
+
+MaxHeroes = 1
+
+###############################################################################

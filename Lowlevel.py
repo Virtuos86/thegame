@@ -6,8 +6,13 @@ lowlevel.py - низкоуровневые платформозависимые 
 
 ###############################################################################
 
+# Python модули.
+import sys
+import random
+
 # Модули игры.
 import Const
+import Game
 
 # Модули Kivy.
 from kivy.clock import Clock
@@ -48,6 +53,42 @@ app = None
 
 ###############################################################################
 
+def ChangeTileSource(x, y, source):
+	# Получаем все виджеты карты, соответствующие тайлам.
+	tiles = window.area.children
+	# Вычисляем позицию тайла для отрисовки.
+	position = window.area.cols * y + x
+	# Получаем виджет, соответствующий тайлу.
+	tile = tiles[position]
+	# Меняем картинку виджета на картинку, соответствующую тайлу.
+	tile.source = source
+
+def ChangeTileSourceWithSavingPrevious(x, y, source):
+	"""
+	Служит для реализации перемещения героя: на тайле поверхности, где находит-
+	ся герой, рисуется его картинка, при этом изначальное изображение тайла со-
+	храняется в специальном слоте-стеке. На одном тайле одновременно могут на-
+	ходиться до трех сущностей (например, герой-артефакт-поверхность), поэтому
+	просто переменная-слот не подходит, нужен массив.
+	"""
+	# Получаем все виджеты карты, соответствующие тайлам.
+	tiles = window.area.children
+	# Вычисляем позицию тайла для отрисовки.
+	position = window.area.cols * y + x
+	# Получаем виджет, соответствующий тайлу.
+	tile = tiles[position]
+	# Сохраняем предыдущую картинку,
+	# добавляя её в стек предыдущих картинок тайла.
+	tile.on.append(tile.source)
+	# Меняем картинку виджета на картинку, соответствующую тайлу.
+	tile.source = source
+
+def CleaningUp(x, y):
+	tiles = window.area.children
+	position = window.area.cols * y + x
+	tile = tiles[position]
+	tile.source = tile.on.pop()
+
 def TileSize():
 	"""Вычисляет размеры тайла."""
 	x = _Window.width * Const.AREA_WIDTH / Const.MAP_WIDTH
@@ -72,15 +113,18 @@ def ShowCell(cell, x, y):
 		Const.tileTree         : './resource/img/tree.png',
 		Const.tileStone        : './resource/img/stone.png',
 	}
-	if not cell.IsVisible:
-		# Получаем все виджеты карты, соответствующие тайлам.
-		tiles = window.area.children
-		# Вычисляем позицию тайла для отрисовки.
-		position = window.area.cols * y + x
-		# Получаем виджет, соответствующий тайлу.
-		tile = tiles[position]
-		# Меняем картинку виджета на картинку, соответствующую тайлу.
-		tile.source = sources[cell.Tile]
+	if cell.IsVisible:
+		ChangeTileSource(x, y, sources[cell.Tile])
+
+def DeathHero():
+	def _():
+		return './resource/img/%s.png' % ['black', 'red'][random.randint(0, 1)]
+	tiles = window.area.children
+	for t in tiles:
+		t.source = _()
+	else:
+		_Window.update_viewport()
+	Clock.schedule_once(sys.exit, 5)
 
 ###############################################################################
 
@@ -95,8 +139,9 @@ class TileImage(Image):
 		self.allow_stretch = True
 		self.keep_ratio = False
 		self.mipmap = False
-		self.texture_size = [1,1]
+		self.texture_size = 1, 1
 		self.spacing = 0
+		self.on = []
 
 class Window(Screen):
 	"""
@@ -116,32 +161,19 @@ class Window(Screen):
 				area.add_widget(TileImage())
 		self.infopane = infopane = GridLayout(rows=10, size_hint_x=(1 - Const.AREA_WIDTH))
 		infopane.add_widget(Label(text=u"Text"))
-		infopane.add_widget(Label(text=u"Text1"))
-		infopane.add_widget(Label(text=u"Text2"))
-		infopane.add_widget(Label(text=u"Text3"))
-		infopane.add_widget(Label(text=u"Text4"))
-		infopane.add_widget(Label(text=u"Text5"))
-		infopane.add_widget(Label(text=u"Text6"))
-		infopane.add_widget(Label(text=u"Text7"))
-		infopane.add_widget(Label(text=u"Text8"))
-		infopane.add_widget(Label(text=u"Text9"))
 		root.add_widget(area)
 		root.add_widget(infopane)
-		self.hero = hero = Scatter(do_rotation=False, do_scale=False)
-		image = Image(source='./resource/img/hero.png',
-		              size_hint=(1, 1), size=TileSize())
-		hero.add_widget(image)
 		self.add_widget(root)
 
 # Основной игровой экран.
 window = Window()
 
-class Game(App):
+class GameApp(App):
 	"""
 	Представляет саму программу (приложение).
 	"""
 	def __init__(self):
-		super(Game, self).__init__()
+		super(GameApp, self).__init__()
 		self.title = u"The Game"
 
 	def build(self):
@@ -156,8 +188,19 @@ def global_keyboard_callback(key, scancode, codepoint, modifiers):
 	"""Обработка нажатий клавиш клавиатуры."""
 	print('key:', key, 'scancode:', scancode,
 	    'codepoint:', repr(codepoint), 'modifiers:', modifiers)
-	if key == 275:
-		app.current = u"other" if app.current == u"main" else u"main"
+	if not modifiers:
+		if key == 273:
+			Game.MoveHero(0, 1)
+		elif key == 274:
+			Game.MoveHero(0, -1)
+		elif key == 275:
+			Game.MoveHero(-1, 0)
+		elif key == 276:
+			Game.MoveHero(1, 0)
+	elif modifiers == ['alt']:
+		# Alt+d[eath]
+		if key == 100:
+			DeathHero()
 
 _Window.on_keyboard = global_keyboard_callback
 #_Window.clearcolor = (200, 0, 0, 1)
@@ -166,5 +209,5 @@ _Window.on_keyboard = global_keyboard_callback
 
 def main():
 	global app
-	app = Game().build()
+	app = GameApp().build()
 	runTouchApp(app)

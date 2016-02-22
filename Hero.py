@@ -63,7 +63,6 @@ def  SetHeroVisible(HeroNum):
 
 def ShowHero(HeroNum):
 	hero = Heroes[HeroNum]
-	curmap = Map.GameMap[Map.CurMap]
 	x, y = (Const.WINDOW_LEFT + hero.x,
 		    Const.WINDOW_TOP + hero.y)
 	Lowlevel.ChangeTileSourceWithSavingPrevious(x, y, './resource/img/hero.png')

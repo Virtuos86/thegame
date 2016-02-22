@@ -1,7 +1,7 @@
 # coding: utf-8
 
 """
-lowlevel.py - низкоуровневые платформозависимые детали
+Lowlevel.py - низкоуровневые платформозависимые детали
 """
 
 ###############################################################################
@@ -12,7 +12,9 @@ import random
 
 # Модули игры.
 import Const
+import Texts
 import Game
+import Hero
 
 # Модули Kivy.
 from kivy.clock import Clock
@@ -84,6 +86,8 @@ def ChangeTileSourceWithSavingPrevious(x, y, source):
 	tile.source = source
 
 def CleaningUp(x, y):
+	"""Подчищает тайл при перемещении героя и монстров, возвращая предыдущую
+	  картинку тайла."""
 	tiles = window.area.children
 	position = window.area.cols * y + x
 	tile = tiles[position]
@@ -100,21 +104,49 @@ def PrepareMap():
 	pass
 
 def  VideoInitialize():
+	"""Оставлено для совместимости."""
 	pass
 
 def ShowCell(cell, x, y):
 	"""Рисует ячейку (тайл) на карте по переданным координатам."""
 	sources = {
-		Const.tileGrass        : './resource/img/grass.png',
-		Const.tileGround       : './resource/img/ground.png',
-		Const.tileStairsUp     : './resource/img/stairs_up.png',
-		Const.tileStairsDown   : './resource/img/stairs_down.png',
+	    Const.tileGrass        : './resource/img/grass.png',
+	    Const.tileGround       : './resource/img/ground.png',
+	    Const.tileStairsUp     : './resource/img/stairs_up.png',
+	    Const.tileStairsDown   : './resource/img/stairs_down.png',
 
-		Const.tileTree         : './resource/img/tree.png',
-		Const.tileStone        : './resource/img/stone.png',
+	    Const.tileTree         : './resource/img/tree.png',
+	    Const.tileStone        : './resource/img/stone.png',
 	}
 	if cell.IsVisible:
 		ChangeTileSource(x, y, sources[cell.Tile])
+
+def ShowMonster(mns):
+	"""Отображает монстра на экране."""
+	sources = {
+	    Texts.STR_MONSTER1: './resource/img/monster1.png',
+	    Texts.STR_MONSTER2: './resource/img/monster2.png',
+	    Texts.STR_MONSTER3: './resource/img/monster3.png',
+	    Texts.STR_MONSTER4: './resource/img/monster4.png',
+	    Texts.STR_MONSTER5: './resource/img/monster4.png',
+	    Texts.STR_MONSTER6: './resource/img/monster4.png',
+	    Texts.STR_MONSTER7: './resource/img/monster4.png',
+	}
+	x, y = (Const.WINDOW_LEFT + mns.x,
+	        Const.WINDOW_TOP + mns.y)
+	ChangeTileSourceWithSavingPrevious(x, y, sources[mns.Name])
+
+def ShowHeroInfo(HeroNum):
+	hero = Hero.Heroes[HeroNum]
+	window.infopane.children[0].text = u''.join((str(Texts.STR_HERO_HP),
+	                                         str(hero.HP),
+	                                         ' / ',
+	                                         str(hero.MaxHP),
+	                                         '\n',
+	                                         Texts.STR_HERO_XY,
+	                                         str(hero.x),
+	                                         ' , ',
+	                                         str(hero.y)))
 
 def DeathHero():
 	def _():
@@ -186,8 +218,8 @@ class GameApp(App):
 
 def global_keyboard_callback(key, scancode, codepoint, modifiers):
 	"""Обработка нажатий клавиш клавиатуры."""
-	print('key:', key, 'scancode:', scancode,
-	    'codepoint:', repr(codepoint), 'modifiers:', modifiers)
+	#print('key:', key, 'scancode:', scancode,
+	#    'codepoint:', repr(codepoint), 'modifiers:', modifiers)
 	if not modifiers:
 		if key == 273:
 			Game.MoveHero(0, 1)

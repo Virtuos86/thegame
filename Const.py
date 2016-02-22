@@ -1,7 +1,7 @@
 # coding: utf-8
 
 """
-const.py - константы игры (по сути, конфиг)
+Const.py - константы игры (по сути, конфиг)
 """
 
 from kivy import platform as _platform
@@ -47,8 +47,8 @@ if _platform == 'android':
 	# высота карты
 	MAP_HEIGHT = 32 + LOCAL_MAP_HEIGHT * 2
 else:
-	LOCAL_MAP_WIDTH = 4
-	LOCAL_MAP_HEIGHT = 4
+	LOCAL_MAP_WIDTH = 8
+	LOCAL_MAP_HEIGHT = 8
 
 	MAP_WIDTH = 32 + LOCAL_MAP_WIDTH * 2
 	MAP_HEIGHT = 32 + LOCAL_MAP_HEIGHT * 2
@@ -89,5 +89,9 @@ skillHandWeapon = 1 # ближний бой
 skillTrapSearch = 2 # обнаружение ловушек
 
 MaxHeroes = 1
+
+###############################################################################
+
+MaxMonsterTypes = 7
 
 ###############################################################################

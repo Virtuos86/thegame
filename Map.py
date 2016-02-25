@@ -81,8 +81,10 @@ def  FreeMapPoint():
 	"""Возвращает координаты рандомно найденной свободной ячейки карты."""
 	curmap = GameMap[CurMap]
 	def _():
-		return (random.randint(0, Const.MAP_WIDTH - Const.LOCAL_MAP_WIDTH * 2) + Const.LOCAL_MAP_WIDTH,
-		        random.randint(0, Const.MAP_HEIGHT - Const.LOCAL_MAP_HEIGHT * 2) + Const.LOCAL_MAP_HEIGHT)
+		return (random.randint(0, Const.MAP_WIDTH - Const.LOCAL_MAP_WIDTH * 2) \
+		    + Const.LOCAL_MAP_WIDTH,
+		      random.randint(0, Const.MAP_HEIGHT - Const.LOCAL_MAP_HEIGHT * 2) \
+		    + Const.LOCAL_MAP_HEIGHT)
 	x, y = _()
 	while not FreeTile(curmap.Cells[x][y].Tile):
 		x, y = _()
@@ -103,11 +105,12 @@ def  ShowMap():
 	"""Рисует карту."""
 	curmap = GameMap[CurMap]
 	Lowlevel.PrepareMap()
-	for x in xrange(curmap.LocalMapLeft,
-				                curmap.LocalMapLeft + Const.LOCAL_MAP_WIDTH + 1):
-					for y in xrange(curmap.LocalMapTop,
-					                curmap.LocalMapTop + Const.LOCAL_MAP_HEIGHT + 1):
-						Lowlevel.ShowCell(curmap.Cells[x][y], x, y)
+	for x in xrange(
+	    curmap.LocalMapLeft,
+	    curmap.LocalMapLeft + Const.LOCAL_MAP_WIDTH + 1):
+		for y in xrange(curmap.LocalMapTop,
+		                curmap.LocalMapTop + Const.LOCAL_MAP_HEIGHT + 1):
+			Lowlevel.ShowCell(curmap.Cells[x][y], x, y)
 	# Хак.
 	Monsters.ShowMonsters()
 	Hero.ShowHero(Hero.CurHero)

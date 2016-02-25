@@ -50,7 +50,7 @@ def InitHero(HeroNum):
 def InitHeroes():
 	global CurHero
 	for i in xrange(Const.MaxHeroes):
-	  InitHero(i)
+		InitHero(i)
 	CurHero = 0
 
 def  SetHeroVisible(HeroNum):

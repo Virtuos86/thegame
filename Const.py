@@ -14,22 +14,23 @@ KEYMOD = 'alt'
 # Управление героем.
 KEYUP = 273
 KEYDOWN = 274
-KEYLEFT = 276
-KEYRIGHT = 275
+KEYLEFT = 275
+KEYRIGHT = 276
 
 ###############################################################################
 
 class Colors:
-    blue   = (0, 0, 1, 1)
-    gray   = (0.5, 0.5, 0.5, 1)
-    green  = (0, 0.5, 0, 1)
-    lime   = (0, 1, 0, 1)
-    maroon = (0.5, 0, 0, 1)
-    navy   = (0, 0, 0.5, 1)
-    purple = (0.5, 0, 0.5, 1)
-    red    = (1, 0, 0, 1)
-    silver = (.75, .75, .75, 1)
-    teal   = (0, 0.5, 0.5, 1)
+	#COLOR = (R,    G,    B,    A)
+	blue   = (0,    0,    1,    1)
+	gray   = (0.5,  0.5,  0.5,  1)
+	green  = (0,    0.5,  0,    1)
+	lime   = (0,    1,    0,    1)
+	maroon = (0.5,  0,    0,    1)
+	navy   = (0,    0,    0.5,  1)
+	purple = (0.5,  0,    0.5,  1)
+	red    = (1,    0,    0,    1)
+	silver = (0.75, 0.75, 0.75, 1)
+	teal   = (0,    0.5,  0.5,  1)
 
 # Ширина игрового поля относительно ширины всего экрана.
 AREA_WIDTH = 0.8
@@ -37,6 +38,8 @@ AREA_WIDTH = 0.8
 AREA_HEIGHT = 1
 
 if _platform == 'android':
+	TILE_WIDTH = 20
+	TILE_HEIGHT = 25
 	# ширина видимой области
 	LOCAL_MAP_WIDTH = 8
 	# высота видимой области
@@ -47,11 +50,13 @@ if _platform == 'android':
 	# высота карты
 	MAP_HEIGHT = 32 + LOCAL_MAP_HEIGHT * 2
 else:
+	TILE_WIDTH = 21
+	TILE_HEIGHT = 20
 	LOCAL_MAP_WIDTH = 8
 	LOCAL_MAP_HEIGHT = 8
 
-	MAP_WIDTH = 32 + LOCAL_MAP_WIDTH * 2
-	MAP_HEIGHT = 32 + LOCAL_MAP_HEIGHT * 2
+	MAP_WIDTH = 16 + LOCAL_MAP_WIDTH * 2
+	MAP_HEIGHT = 16 + LOCAL_MAP_HEIGHT * 2
 
 # Начало окна вывода видимой части карты (оставлено для совместимости).
 WINDOW_LEFT = 0

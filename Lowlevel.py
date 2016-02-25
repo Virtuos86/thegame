@@ -18,9 +18,6 @@ import Hero
 
 # Модули Kivy.
 from kivy.clock import Clock
-# Перезагружаем конфиг каждую минуту, чтобы можно было редактировать его
-# на лету.
-Clock.schedule_interval(lambda dt: reload(Const), 60)
 from kivy.metrics import sp
 from kivy.uix.textinput import TextInput
 from kivy.uix.floatlayout import FloatLayout
@@ -55,11 +52,17 @@ app = None
 
 ###############################################################################
 
+def TileSize():
+	"""Вычисляет размеры тайла."""
+	x = Const.TILE_WIDTH
+	y = Const.TILE_HEIGHT
+	return x, y
+
 def ChangeTileSource(x, y, source):
 	# Получаем все виджеты карты, соответствующие тайлам.
 	tiles = window.area.children
 	# Вычисляем позицию тайла для отрисовки.
-	position = window.area.cols * y + x
+	position = Const.MAP_WIDTH * y + x
 	# Получаем виджет, соответствующий тайлу.
 	tile = tiles[position]
 	# Меняем картинку виджета на картинку, соответствующую тайлу.
@@ -76,7 +79,7 @@ def ChangeTileSourceWithSavingPrevious(x, y, source):
 	# Получаем все виджеты карты, соответствующие тайлам.
 	tiles = window.area.children
 	# Вычисляем позицию тайла для отрисовки.
-	position = window.area.cols * y + x
+	position = Const.MAP_WIDTH * y + x
 	# Получаем виджет, соответствующий тайлу.
 	tile = tiles[position]
 	# Сохраняем предыдущую картинку,
@@ -89,15 +92,9 @@ def CleaningUp(x, y):
 	"""Подчищает тайл при перемещении героя и монстров, возвращая предыдущую
 	  картинку тайла."""
 	tiles = window.area.children
-	position = window.area.cols * y + x
+	position = Const.MAP_WIDTH * y + x
 	tile = tiles[position]
 	tile.source = tile.on.pop()
-
-def TileSize():
-	"""Вычисляет размеры тайла."""
-	x = _Window.width * Const.AREA_WIDTH / Const.MAP_WIDTH
-	y = _Window.height * Const.AREA_HEIGHT / Const.MAP_HEIGHT
-	return x, y
 
 def PrepareMap():
 	"""Подготовка карты. Должна очищать окно."""
@@ -185,17 +182,41 @@ class Window(Screen):
 	def __init__(self, **kwargs):
 		self.name = u'main'
 		super(Window, self).__init__(**kwargs)
-		self.root = root = GridLayout(cols=2)
-		self.area = area = GridLayout(
-		    cols=Const.MAP_WIDTH, size_hint_x=Const.AREA_WIDTH)
+		self.root = root = FloatLayout()
+		self.board = board = FloatLayout()
+		print (Const.TILE_WIDTH * Const.MAP_WIDTH,
+		          Const.TILE_HEIGHT * Const.MAP_HEIGHT)
+		self.area = area = FloatLayout(
+		    size=(Const.TILE_WIDTH * Const.MAP_WIDTH,
+		          Const.TILE_HEIGHT * Const.MAP_HEIGHT),
+		    size_hint_x=Const.AREA_WIDTH,
+		    pos=(self.CenteredView((-Const.MAP_WIDTH / 2) * Const.TILE_WIDTH,
+		         (-Const.MAP_HEIGHT / 2) * Const.TILE_HEIGHT)))
 		for y in xrange(Const.MAP_HEIGHT):
 			for x in xrange(Const.MAP_WIDTH):
-				area.add_widget(TileImage())
-		self.infopane = infopane = GridLayout(rows=10, size_hint_x=(1 - Const.AREA_WIDTH))
+				area.add_widget(TileImage(pos=(x * Const.TILE_WIDTH,
+				                               y * Const.TILE_HEIGHT),
+				                          size_hint=(1.0 / Const.MAP_WIDTH,
+				                                     1.0 / Const.MAP_HEIGHT)))
+		self.infopane = infopane = GridLayout(
+		    rows=10,
+		    size_hint_x=(1 - Const.AREA_WIDTH),
+		    pos=(area.size[0], 0))
 		infopane.add_widget(Label(text=u"Text"))
-		root.add_widget(area)
+		board.add_widget(area)
+		root.add_widget(board)
 		root.add_widget(infopane)
 		self.add_widget(root)
+
+	def CenteredView(self, x, y):
+		width, height = self.size
+		print self.size, _Window.size
+		if width < _Window.width * Const.AREA_WIDTH:
+			x += (_Window.width - width) / 2
+		if height < _Window.height * Const.AREA_HEIGHT:
+			y += (_Window.height - height) / 2
+		print x,y
+		return x, y
 
 # Основной игровой экран.
 window = Window()
@@ -221,16 +242,16 @@ def global_keyboard_callback(key, scancode, codepoint, modifiers):
 	#print('key:', key, 'scancode:', scancode,
 	#    'codepoint:', repr(codepoint), 'modifiers:', modifiers)
 	if not modifiers:
-		if key == 273:
-			Game.MoveHero(0, 1)
-		elif key == 274:
+		if key == Const.KEYUP:
 			Game.MoveHero(0, -1)
-		elif key == 275:
+		elif key == Const.KEYDOWN:
+			Game.MoveHero(0, 1)
+		elif key == Const.KEYLEFT:
 			Game.MoveHero(-1, 0)
-		elif key == 276:
+		elif key == Const.KEYRIGHT:
 			Game.MoveHero(1, 0)
-	elif modifiers == ['alt']:
-		# Alt+d[eath]
+	elif modifiers == [Const.KEYMOD]:
+		# KEYMOD+d[eath]
 		if key == 100:
 			DeathHero()
 
